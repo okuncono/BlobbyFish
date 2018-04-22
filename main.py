@@ -88,3 +88,21 @@ def bombConfig():
 
 #Main loop
 while mainGame == True:
+    eventFunction()
+    #Blitting images onto screen
+    screen.blit(background, (wHalf - dimensions.center[0], hHalf - dimensions.center[1]))
+
+    #Moving background infinitely
+    #CODE TAKEN FROM YOUTUBER "Code Pylet"
+    repeatScroll = scroll % background.get_rect().width
+    screen.blit(background, (repeatScroll - background.get_rect().width, 0))
+    if repeatScroll < width:
+        screen.blit(background, (repeatScroll, 0))
+    scroll -= 1
+
+    #Control and operation of blobfish sprite
+    blobfishConfig()
+
+    #Updates screen and frame rate
+    pygame.display.update()
+    clock.tick(FPS)
