@@ -6,21 +6,20 @@
 #As well, I looked at the original flappy bird code and developed a feel for hwo the project should be made. 
 #My teammate eliminated the problems and other stuff to creat our similar game to to flappy bird.
 
-#EXAMPLE FROM CODE PYLET
+#SOME CODE TAKEN FROM CODE PYLET'S TUTORIALS
 import pygame
 import pygame.gfxdraw
 from pygame.locals import *
 import sys
 import os
-from turtle import *
 from random import randint
 
 #Intialize settings and variables
 pygame.init()
 pygame.display.set_caption("Blobbyfish")
-width = 600
+width = 500
 wHalf = width / 2
-height = 450
+height = 500
 hHalf = height / 2
 area = width * height
 screen = pygame.display.set_mode((width, height))
@@ -28,14 +27,16 @@ clock = pygame.time.Clock()
 FPS = 500
 scroll = 0
 mainGame = True
+keys = [False, False, False, False]
+blobfishPos = [375 - blobfishDimen.center[0], 375 - blobfishDimen.center[1]]
 
 #Loading Images
 #Background
-background = pygame.image.load('FINAL PROJECT/images/finalbackground.png')
+background = pygame.image.load('FINAL PROJECT/Blobbyfish/finalbackground.png')
 dimensions = background.get_rect()
 print(dimensions)
 #Blobfish
-blobfish = pygame.image.load('FINAL PROJECT/images/finalblobfish.png')
+blobfish = pygame.image.load('FINAL PROJECT/Blobbyfish/blobfishfinal.png')
 blobfishDimen = blobfish.get_rect()
 print(blobfishDimen)
 
@@ -48,31 +49,42 @@ def eventFunction():
 
 def blobfishConfig():
     #Blitting blobfish on top of background
-    screen.blit(blobfish, (375 - blobfishDimen.center[0], 375 - blobfishDimen.center[1]))
+    screen.blit(blobfish, blobfishPos)
 
-    #Turtle Control
-    
+    #Control of Blobfish - TAKEN FROM https://www.raywenderlich.com/24252/beginning-game-programming-for-teens-with-python 
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key==K_w:
+                    keys[0]=True
+                elif event.key==K_a:
+                    keys[1]=True
+                elif event.key==K_s:
+                    keys[2]=True
+                elif event.key==K_d:
+                    keys[3]=True
+            if event.type == pygame.KEYUP:
+                if event.key==pygame.K_w:
+                    keys[0]=False
+                elif event.key==pygame.K_a:
+                    keys[1]=False
+                elif event.key==pygame.K_s:
+                    keys[2]=False
+                elif event.key==pygame.K_d:
+                    keys[3]=False
+        if keys[0]:
+            playerpos[1]-=5
+        elif keys[2]:
+            playerpos[1]+=5
+        if keys[1]:
+            playerpos[0]-=5
+        elif keys[3]:
+            playerpos[0]+=5
+
 
 
 def bombConfig():
     #Random bomb generated on screen
 
+#Main loop
 while mainGame == True:
-    eventFunction()
-
-    #Blitting images onto screen
-    screen.blit(background, (wHalf - dimensions.center[0], hHalf - dimensions.center[1]))
-
-    #Moving background infinitely
-    repeatScroll = scroll % background.get_rect().width
-    screen.blit(background, (repeatScroll - background.get_rect().width, 0))
-    if repeatScroll < width:
-        screen.blit(background, (repeatScroll, 0))
-    scroll -= 1
-
-    #Control and operation of blobfish sprite
-    blobfishConfig()
-
-    #Updates screen and frame rate
-    pygame.display.update()
-    clock.tick(FPS)
