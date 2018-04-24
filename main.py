@@ -49,13 +49,26 @@ def eventFunction():
             pygame.quit()
             sys.exit()
 
-def blobfishConfig():
-    #Blitting blobfish on top of background
-    screen.blit(blobfish, blobfishPos)
+#def bombConfig():
+    #Random bomb generated on screen
 
-    #Control of Blobfish - TAKEN FROM https://www.raywenderlich.com/24252/beginning-game-programming-for-teens-with-python 
-    while True:
-        for event in pygame.event.get():
+#Main loop
+while mainGame == True:
+    eventFunction()
+    #Blitting images onto screen
+    screen.blit(background, (wHalf - dimensions.center[0], hHalf - dimensions.center[1]))
+
+    #Moving background infinitely
+    #CODE TAKEN FROM YOUTUBER "Code Pylet"
+    repeatScroll = scroll % background.get_rect().width
+    screen.blit(background, (repeatScroll - background.get_rect().width, 0))
+    if repeatScroll < width:
+        screen.blit(background, (repeatScroll, 0))
+    scroll -= 1
+
+    #Configurating controls for blobfish
+    screen.blit(blobfish, blobfishPos)
+    for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 #In the event, if the key that is pushed down is either w, a, s, or d, it will state true for that certain key.
                 if event.key==K_w:
@@ -75,40 +88,18 @@ def blobfishConfig():
                     keys[2]=False
                 elif event.key==pygame.K_d:
                     keys[3]=False
-        if keys[0]:
-            blobfishPos[1]-=5
-            #The position is subtracted from blobfishPos. 
-            #The pixels decrease the higher up the character goes. It increases the lower it goes
-        elif keys[2]:
-            blobfishPos[1]+=5
-        if keys[1]:
-            blobfishPos[0]-=5
-            #The pixels decrease as the character goes left. It increases as the character goes right.
-        elif keys[3]:
-            blobfishPos[0]+=5
-
-
-
-#def bombConfig():
-    #Random bomb generated on screen
-
-#Main loop
-while mainGame == True:
-    eventFunction()
-    #Blitting images onto screen
-    screen.blit(background, (wHalf - dimensions.center[0], hHalf - dimensions.center[1]))
-
-    #Moving background infinitely
-    #CODE TAKEN FROM YOUTUBER "Code Pylet"
-    repeatScroll = scroll % background.get_rect().width
-    screen.blit(background, (repeatScroll - background.get_rect().width, 0))
-    if repeatScroll < width:
-        screen.blit(background, (repeatScroll, 0))
-    scroll -= 1
-
-    #Control and operation of blobfish sprite
-    blobfishConfig()
-
+    if keys[0] == True:
+        blobfishPos[1]-=5
+        #The position is subtracted from blobfishPos. 
+        #The pixels decrease the higher up the character goes. It increases the lower it goes
+    elif keys[2] == True:
+        blobfishPos[1]+=5
+    if keys[1] == True:
+        blobfishPos[0]-=5
+        #The pixels decrease as the character goes left. It increases as the character goes right.
+    elif keys[3] == True:
+        blobfishPos[0]+=5
+            
     #Updates screen and frame rate
     pygame.display.update()
     clock.tick(FPS)
