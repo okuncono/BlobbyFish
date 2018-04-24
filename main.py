@@ -17,6 +17,7 @@ from random import randint
 #Intialize settings and variables
 pygame.init()
 pygame.display.set_caption("Blobbyfish")
+    #Caption for game
 width = 500
 wHalf = width / 2
 height = 500
@@ -28,9 +29,9 @@ FPS = 500
 scroll = 0
 mainGame = True
 keys = [False, False, False, False]
-blobfishPos = [375 - blobfishDimen.center[0], 375 - blobfishDimen.center[1]]
+alive = 1
 
-#Loading Images
+#Loading Images into Pygame
 #Background
 background = pygame.image.load('FINAL PROJECT/Blobbyfish/finalbackground.png')
 dimensions = background.get_rect()
@@ -38,6 +39,7 @@ print(dimensions)
 #Blobfish
 blobfish = pygame.image.load('FINAL PROJECT/Blobbyfish/blobfishfinal.png')
 blobfishDimen = blobfish.get_rect()
+blobfishPos = [375 - blobfishDimen.center[0], 375 - blobfishDimen.center[1]]
 print(blobfishDimen)
 
 #Functions
@@ -55,6 +57,7 @@ def blobfishConfig():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
+                #In the event, if the key that is pushed down is either w, a, s, or d, it will state true for that certain key.
                 if event.key==K_w:
                     keys[0]=True
                 elif event.key==K_a:
@@ -73,17 +76,20 @@ def blobfishConfig():
                 elif event.key==pygame.K_d:
                     keys[3]=False
         if keys[0]:
-            playerpos[1]-=5
+            blobfishPos[1]-=5
+            #The position is subtracted from blobfishPos. 
+            #The pixels decrease the higher up the character goes. It increases the lower it goes
         elif keys[2]:
-            playerpos[1]+=5
+            blobfishPos[1]+=5
         if keys[1]:
-            playerpos[0]-=5
+            blobfishPos[0]-=5
+            #The pixels decrease as the character goes left. It increases as the character goes right.
         elif keys[3]:
-            playerpos[0]+=5
+            blobfishPos[0]+=5
 
 
 
-def bombConfig():
+#def bombConfig():
     #Random bomb generated on screen
 
 #Main loop
