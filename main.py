@@ -30,6 +30,7 @@ scroll = 0
 mainGame = True
 keys = [False, False, False, False]
 alive = 1
+movement = [True, True, True, True]
 
 #Loading Images into Pygame
 #Background
@@ -39,7 +40,7 @@ print(dimensions)
 #Blobfish
 blobfish = pygame.image.load('FINAL PROJECT/Blobbyfish/blobfishfinal.png')
 blobfishDimen = blobfish.get_rect()
-blobfishPos = [375 - blobfishDimen.center[0], 375 - blobfishDimen.center[1]]
+blobfishPos = [0, 250]
 print(blobfishDimen)
 
 #Functions
@@ -68,6 +69,31 @@ while mainGame == True:
 
     #Configurating controls for blobfish
     screen.blit(blobfish, blobfishPos)
+
+    #Collision Config blobfish and pygame window
+    #Setting Collision Boundaries for sprite.
+    #Used math and dimensions of the sprite to calculate the certain pixel points where it would stop.
+    if blobfishPos[0] == 420:
+        movement[3] = False
+    elif blobfishPos[0] != 420:
+        movement[3] = True
+    if blobfishPos[0] == 0:
+        movement[1] = False
+    elif blobfishPos[0] != 0:
+        movement[1] = True
+    if blobfishPos[1] == 450:
+        movement[2] = False
+    elif blobfishPos[1] != 450:
+        movement[2] = True
+    if blobfishPos[1] == 0:
+        movement[0] = False
+    elif blobfishPos[1] != 0:
+        movement[0] = True
+
+#Width 80
+#Heigt 50
+
+    #Controling movement of blobfish
     for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 #In the event, if the key that is pushed down is either w, a, s, or d, it will state true for that certain key.
@@ -88,16 +114,16 @@ while mainGame == True:
                     keys[2]=False
                 elif event.key==pygame.K_d:
                     keys[3]=False
-    if keys[0] == True:
+    if keys[0] == True and movement[0] == True:
         blobfishPos[1]-=5
         #The position is subtracted from blobfishPos. 
         #The pixels decrease the higher up the character goes. It increases the lower it goes
-    elif keys[2] == True:
+    elif keys[2] == True and movement[2] == True:
         blobfishPos[1]+=5
-    if keys[1] == True:
+    if keys[1] == True and movement[1] == True:
         blobfishPos[0]-=5
         #The pixels decrease as the character goes left. It increases as the character goes right.
-    elif keys[3] == True:
+    elif keys[3] == True and movement[3] == True:
         blobfishPos[0]+=5
             
     #Updates screen and frame rate
