@@ -25,7 +25,7 @@ hHalf = height / 2
 area = width * height
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
-FPS = 500
+FPS = 1000
 scroll = 0
 mainGame = True
 keys = [False, False, False, False]
@@ -42,6 +42,12 @@ blobfish = pygame.image.load('FINAL PROJECT/Blobbyfish/blobfishfinal.png')
 blobfishDimen = blobfish.get_rect()
 blobfishPos = [0, 250]
 print(blobfishDimen)
+#Bomb
+bomb = pygame.image.load('FINAL PROJECT/Blobbyfish/bomb.png')
+bombDimen = bomb.get_rect()
+bombPosTop = [500, 105]
+bombPosMid = [500, 205]
+bombPosBot = [500, 305]
 
 #Functions
 def eventFunction():
@@ -50,10 +56,48 @@ def eventFunction():
             pygame.quit()
             sys.exit()
 
-#def bombConfig():
-    #Random bomb generated on screen
+#Bomb Configuration
+def randomBombGen():
+    amountBomb = randint(1,3)
+    #array = ["top", "middle", "bottom"]
+    resultArray = randint(1, 3)
+    resultArray1 = randint(2, 3)
+    resultArray2 = randint(2, 3)
+    resultArray3 = randint(1,2)
+    print(resultArray)
+    if amountBomb == 1:
+        if resultArray == 1:
+            screen.blit(bomb, bombPosTop)
+        elif resultArray == 2:
+            screen.blit(bomb, bombPosMid)
+        elif resultArray == 3:
+            screen.blit(bomb, bombPosBot)
+    if amountBomb == 2:
+        if resultArray == 1:
+            screen.blit(bomb, bombPosTop)
+            if resultArray1 == 2:
+                screen.blit(bomb, bombPosMid)
+            if resultArray1 == 3:
+                screen.blit(bomb, bombPosBot)
+        if resultArray == 2:
+            screen.blit(bomb, bombPosMid)
+            if resultArray2 == 2:
+                screen.blit(bomb, bombPosTop)
+            if resultArray2 == 3:
+                screen.blit(bomb, bombPosBot)
+        if resultArray == 3:
+            screen.blit(bomb, bombPosBot)
+            if resultArray3 == 1:
+                screen.blit(bomb, bombPosTop)
+            if resultArray3 == 2:
+                screen.blit(bomb, bombPosMid)
+    if amountBomb == 3:
+        screen.blit(bomb, bombPosTop)
+        screen.blit(bomb, bombPosMid)
+        screen.blit(bomb, bombPosBot)
 
-#Main loop
+################# M A I N   L O O P #################
+
 while mainGame == True:
     eventFunction()
     #Blitting images onto screen
@@ -65,7 +109,12 @@ while mainGame == True:
     screen.blit(background, (repeatScroll - background.get_rect().width, 0))
     if repeatScroll < width:
         screen.blit(background, (repeatScroll, 0))
-    scroll -= 1
+        randomBombGen()
+    scroll -= 2
+
+    bombPosTop[0] -= 5
+    bombPosMid[0] -= 5
+    bombPosBot[0] -= 5
 
     #Configurating controls for blobfish
     screen.blit(blobfish, blobfishPos)
@@ -125,7 +174,8 @@ while mainGame == True:
         #The pixels decrease as the character goes left. It increases as the character goes right.
     elif keys[3] == True and movement[3] == True:
         blobfishPos[0]+=5
-            
+        scroll -=4
+
     #Updates screen and frame rate
     pygame.display.update()
     clock.tick(FPS)
