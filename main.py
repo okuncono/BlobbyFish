@@ -6,13 +6,14 @@
 #As well, I looked at the original flappy bird code and developed a feel for hwo the project should be made. 
 #My teammate eliminated the problems and other stuff to creat our similar game to to flappy bird.
 
+import os
+import sys
+from random import randint
+
 #SOME CODE TAKEN FROM CODE PYLET'S TUTORIALS
 import pygame
 import pygame.gfxdraw
 from pygame.locals import *
-import sys
-import os
-from random import randint
 
 #Intialize settings and variables
 pygame.init()
@@ -43,11 +44,16 @@ blobfishDimen = blobfish.get_rect()
 blobfishPos = [0, 250]
 print(blobfishDimen)
 #Bomb
-bomb = pygame.image.load('FINAL PROJECT/Blobbyfish/bomb.png')
-bombDimen = bomb.get_rect()
+bombTop = pygame.image.load('FINAL PROJECT/Blobbyfish/bomb0.png')
+bombMid = pygame.image.load('FINAL PROJECT/Blobbyfish/bomb1.png')
+bombBot = pygame.image.load('FINAL PROJECT/Blobbyfish/bomb2.png')
+#bombDimen = bomb.get_rect()
 bombPosTop = [500, 105]
 bombPosMid = [500, 205]
 bombPosBot = [500, 305]
+bombTopAlive = False
+bombMidAlive = False
+bombBotAlive = False
 
 #Functions
 def eventFunction():
@@ -56,45 +62,64 @@ def eventFunction():
             pygame.quit()
             sys.exit()
 
+#Booleans defining when to move bombs across the screen
+def checkPos():
+    if bombPosTop[0] <= -90:
+        bombPosTop[0] += 590
+        bombTopAlive = False
+    if bombPosMid[0] <= -90:
+        bombPosMid[0] += 590
+        bombMidAlive = False
+    if bombPosBot[0] <= -90:
+        bombPosBot[0] += 590
+        bombBotAlive = False
+
 #Bomb Configuration
 def randomBombGen():
     amountBomb = randint(1,3)
     #array = ["top", "middle", "bottom"]
-    resultArray = randint(1, 3)
     resultArray1 = randint(2, 3)
     resultArray2 = randint(2, 3)
+    resultArray = randint(1, 3)
     resultArray3 = randint(1,2)
-    print(resultArray)
     if amountBomb == 1:
         if resultArray == 1:
-            screen.blit(bomb, bombPosTop)
-        elif resultArray == 2:
-            screen.blit(bomb, bombPosMid)
-        elif resultArray == 3:
-            screen.blit(bomb, bombPosBot)
-    if amountBomb == 2:
-        if resultArray == 1:
-            screen.blit(bomb, bombPosTop)
-            if resultArray1 == 2:
-                screen.blit(bomb, bombPosMid)
-            if resultArray1 == 3:
-                screen.blit(bomb, bombPosBot)
+            bombTopAlive = True
         if resultArray == 2:
-            screen.blit(bomb, bombPosMid)
-            if resultArray2 == 2:
-                screen.blit(bomb, bombPosTop)
-            if resultArray2 == 3:
-                screen.blit(bomb, bombPosBot)
+            bombMidAlive = True
         if resultArray == 3:
-            screen.blit(bomb, bombPosBot)
-            if resultArray3 == 1:
-                screen.blit(bomb, bombPosTop)
-            if resultArray3 == 2:
-                screen.blit(bomb, bombPosMid)
-    if amountBomb == 3:
-        screen.blit(bomb, bombPosTop)
-        screen.blit(bomb, bombPosMid)
-        screen.blit(bomb, bombPosBot)
+            bombBotAlive = True
+    # if amountBomb == 2:
+    #     if resultArray == 1:
+    #         screen.blit(bombTop, bombPosTop)
+    #         if resultArray1 == 2:
+    #             screen.blit(bombMid, bombPosMid)
+    #             bombAlive = True
+    #         if resultArray1 == 3:
+    #             screen.blit(bombBot, bombPosBot)
+    #             bombAlive = True
+    #     if resultArray == 2:
+    #         screen.blit(bombMid, bombPosMid)
+    #         if resultArray2 == 2:
+    #             screen.blit(bombTop, bombPosTop)
+    #             bombAlive = True
+    #         if resultArray2 == 3:
+    #             screen.blit(bombBot, bombPosBot)
+    #             bombAlive = True
+    #     if resultArray == 3:
+    #         screen.blit(bombBot, bombPosBot)
+    #         if resultArray3 == 1:
+    #             screen.blit(bombTop, bombPosTop)
+    #             bombAlive = True 
+    #         if resultArray3 == 2:
+    #             screen.blit(bombMid, bombPosMid)
+    #             bombAlive = True
+    # if amountBomb == 3:
+    #     screen.blit(bombTop, bombPosTop)
+    #     screen.blit(bombMid, bombPosMid)
+    #     screen.blit(bombBot, bombPosBot)
+    #     bombAlive = True
+    
 
 ################# M A I N   L O O P #################
 
@@ -109,13 +134,26 @@ while mainGame == True:
     screen.blit(background, (repeatScroll - background.get_rect().width, 0))
     if repeatScroll < width:
         screen.blit(background, (repeatScroll, 0))
-        randomBombGen()
     scroll -= 2
 
-    bombPosTop[0] -= 5
-    bombPosMid[0] -= 5
-    bombPosBot[0] -= 5
-
+    #Configurating bomb movement in the loop
+    screen.blit(bombTop, bombPosTop)
+    screen.blit(bombMid, bombPosMid)
+    screen.blit(bombBot, bombPosBot)
+    checkPos()
+    if bombPosTop[0] == 500:
+        randomBombGen()
+    if bombPosMid[0] == 500:
+        randomBombGen()
+    if bombPosBot[0] == 500:
+        randomBombGen()
+    if bombTopAlive == True:
+        bombPosTop[0] -= 5
+    if bombMidAlive == True:
+        bombPosMid[0] -= 5
+    if bombBotAlive == True:
+        bombPosBot[0] -= 5
+    
     #Configurating controls for blobfish
     screen.blit(blobfish, blobfishPos)
 
