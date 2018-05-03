@@ -35,7 +35,7 @@ movement = [True, True, True, True]
 pointsCounted = False
 points = 0
 
-#Loading Images into Pygame
+#Loading Images into Pygame and other variables for the game
 #Background
 background = pygame.image.load('finalbackground.png')
 dimensions = background.get_rect()
@@ -43,6 +43,7 @@ print(dimensions)
 #Blobfish
 blobfish = pygame.image.load('blobfishfinal.png')
 blobfishDimen = blobfish.get_rect()
+blobfishMask = pygame.mask.from_surface(blobfish)
 blobfishPos = [0, 250]
 print(blobfishDimen)
 #Bomb
@@ -55,12 +56,21 @@ bombMidDimen = bombMid.get_rect()
 bombBot = pygame.image.load('bomb2.png')
 global bombBotDimen
 bombBotDimen = bombBot.get_rect()
+bombMaskTop = pygame.mask.from_surface(bombTop)
+bombMaskMid = pygame.mask.from_surface(bombMid)
+bombMaskBot = pygame.mask.from_surface(bombBot)
+#bombCenterTop = [wHalf - bombTopDimen.center[0], hHalf - bombTopDimen.center[1]]
+#bombCenterMid = [wHalf - bombMidDimen.center[0], hHalf - bombMidDimen.center[1]]
+#bombCenterBot = [wHalf - bombBotDimen.center[0], hHalf - bombBotDimen.center[1]]
 bombPosTop = [500, 105]
 bombPosMid = [500, 205]
 bombPosBot = [500, 305]
 bombTopAlive = False
 bombMidAlive = False
 bombBotAlive = False
+bombCenterTop = [bombPosTop[0] + bombTopDimen.center[0], bombPosTop[1]]
+bombCenterMid = [bombPosMid[0] + bombMidDimen.center[0], bombPosMid[1]]
+bombCenterBot = [bombPosBot[0] + bombBotDimen.center[0], bombPosBot[1]]
 
 #Functions
 def eventFunction():
@@ -74,6 +84,7 @@ def checkBombPos():
     global pointsCounted
     if bombPosTop[0] <= -90:
         bombPosTop[0] = 500
+        bombCenterTop[0] = 545
         global bombTopAlive
         bombTopAlive = False
         pointsCounted = False
@@ -89,13 +100,15 @@ def checkBombPos():
         bombBotAlive = False
         pointsCounted = False
 
-# def checkCollision():
-#     collision1 = blobfishDimen.collide_rect(bombTopDimen)
-#     collision2 = blobfishDimen.collide_rect(bombMidDimen)
-#     collision3 = blobfishDimen.collide_rect(bombBotDimen)
-#     print("check works")
-#     if collision1 == True or collision2 == True or collision3 == True:
-#         print("gameover")
+def checkCollision():
+    offset = [(blobfishPos[0] - bombCenterTop[0], blobfishPos[1] - bombCenterTop[1]), (blobfishPos[0] - bombCenterMid[0], blobfishPos[1] - bombCenterMid[1]), (blobfishPos[0] - bombCenterBot[0], blobfishPos[1] - bombCenterBot[1])]
+    offset1 = [(blobfishPos[0] - bombPosTop[0], blobfishPos[1] - bombPosTop[1]), (blobfishPos[0] - bombPosMid[0], blobfishPos[1] - bombPosMid[1]), (blobfishPos[0] - bombPosBot[0], blobfishPos[1] - bombPosBot[1])]
+    collisionTop, collisionTop1 = bombMaskTop.overlap(blobfishMask, offset[0]), bombMaskTop.overlap(blobfishMask, offset1[0])
+    collisionMid, collisionMid1 = bombMaskMid.overlap(blobfishMask, offset[1]), bombMaskMid.overlap(blobfishMask, offset1[1])
+    collisionBot, collisionBot1 = bombMaskBot.overlap(blobfishMask, offset[2]), bombMaskBot.overlap(blobfishMask, offset1[2])
+    if collisionTop or collisionTop1 or collisionMid or collisionMid1 or collisionBot or collisionBot1:
+        print("gameover")
+        quit()
 
 #Bomb Configuration
 def randomBombGen():
@@ -170,18 +183,18 @@ while mainGame == True:
     screen.blit(background, (repeatScroll - background.get_rect().width, 0))
     if repeatScroll < width:
         screen.blit(background, (repeatScroll, 0))
-    scroll -= 5
+    scroll -= 10
 
     #Configurating bomb movement in the loop
     screen.blit(bombTop, bombPosTop)
     screen.blit(bombMid, bombPosMid)
     screen.blit(bombBot, bombPosBot)
     if bombTopAlive == True:
-        bombPosTop[0] -= 5
+        bombPosTop[0] -= 10
     if bombMidAlive == True:
-        bombPosMid[0] -= 5
+        bombPosMid[0] -= 10
     if bombBotAlive == True:
-        bombPosBot[0] -= 5
+        bombPosBot[0] -= 10
     checkBombPos()
     if bombPosTop[0] == 500 and bombPosMid[0] == 500 and bombPosBot[0] == 500:
         randomBombGen()
@@ -230,7 +243,7 @@ while mainGame == True:
 #Heigt 50
 
     #Collision with Bombs
-    #checkCollision()
+    checkCollision()
 
     #Controling movement of blobfish
     for event in pygame.event.get():
@@ -254,16 +267,16 @@ while mainGame == True:
                 elif event.key==pygame.K_d:
                     keys[3]=False
     if keys[0] == True and movement[0] == True:
-        blobfishPos[1]-=5
+        blobfishPos[1]-=10
         #The position is subtracted from blobfishPos. 
         #The pixels decrease the higher up the character goes. It increases the lower it goes
     elif keys[2] == True and movement[2] == True:
-        blobfishPos[1]+=5
+        blobfishPos[1]+=10
     if keys[1] == True and movement[1] == True:
-        blobfishPos[0]-=5
+        blobfishPos[0]-=10
         #The pixels decrease as the character goes left. It increases as the character goes right.
     elif keys[3] == True and movement[3] == True:
-        blobfishPos[0]+=5
+        blobfishPos[0]+=10
 
     #Updates screen and frame rate
     pygame.display.update()
