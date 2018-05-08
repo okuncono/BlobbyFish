@@ -5,10 +5,14 @@
 #I also learned how to bli an image onto a certian coordinate. 
 #As well, I looked at the original flappy bird code and developed a feel for hwo the project should be made. 
 #My teammate eliminated the problems and other stuff to creat our similar game to to flappy bird.
+#The past few weeks have been creating collisions, creating the art work for different positions of the blobfish.
+#As well, a point system has been implemetned which prints out your total amount of points in the terminal.
+#A random bomb generator has been implemented and it also works with the blobfish.
 
 import os
 import sys
 from random import randint
+import math
 
 #SOME CODE TAKEN FROM CODE PYLET'S TUTORIALS
 import pygame
@@ -59,9 +63,6 @@ bombBotDimen = bombBot.get_rect()
 bombMaskTop = pygame.mask.from_surface(bombTop)
 bombMaskMid = pygame.mask.from_surface(bombMid)
 bombMaskBot = pygame.mask.from_surface(bombBot)
-#bombCenterTop = [wHalf - bombTopDimen.center[0], hHalf - bombTopDimen.center[1]]
-#bombCenterMid = [wHalf - bombMidDimen.center[0], hHalf - bombMidDimen.center[1]]
-#bombCenterBot = [wHalf - bombBotDimen.center[0], hHalf - bombBotDimen.center[1]]
 bombPosTop = [500, 105]
 bombPosMid = [500, 205]
 bombPosBot = [500, 305]
@@ -71,6 +72,13 @@ bombBotAlive = False
 bombCenterTop = [bombPosTop[0] + bombTopDimen.center[0], bombPosTop[1]]
 bombCenterMid = [bombPosMid[0] + bombMidDimen.center[0], bombPosMid[1]]
 bombCenterBot = [bombPosBot[0] + bombBotDimen.center[0], bombPosBot[1]]
+#Loading oxygen images
+global oxygen
+oxygen = pygame.image.load('oxygen.png')
+global oxygenNum
+oxygenNum = pygame.image.load('100.png')
+global oxygenlvl
+oxygenlvl = 100
 
 #Functions
 def eventFunction():
@@ -101,6 +109,7 @@ def checkBombPos():
         pointsCounted = False
 
 def checkCollision():
+    #checking collisions. CODE TAKEN FROM CODE PYLET
     offset = [(blobfishPos[0] - bombCenterTop[0], blobfishPos[1] - bombCenterTop[1]), (blobfishPos[0] - bombCenterMid[0], blobfishPos[1] - bombCenterMid[1]), (blobfishPos[0] - bombCenterBot[0], blobfishPos[1] - bombCenterBot[1])]
     offset1 = [(blobfishPos[0] - bombPosTop[0], blobfishPos[1] - bombPosTop[1]), (blobfishPos[0] - bombPosMid[0], blobfishPos[1] - bombPosMid[1]), (blobfishPos[0] - bombPosBot[0], blobfishPos[1] - bombPosBot[1])]
     collisionTop, collisionTop1 = bombMaskTop.overlap(blobfishMask, offset[0]), bombMaskTop.overlap(blobfishMask, offset1[0])
@@ -109,6 +118,36 @@ def checkCollision():
     if collisionTop or collisionTop1 or collisionMid or collisionMid1 or collisionBot or collisionBot1:
         print("gameover")
         quit()
+    if oxygen == 0:
+        print("gameover")
+        quit()
+
+def checkBlobfishLayer():
+    #checks if the blobfish is in the ground or in the air.
+    #future code will implement where the blobfish can stay in ground or air for a certain amount of time.
+    global blobfish
+    if blobfishPos[1] <= 75:
+        blobfish = pygame.image.load('blobfishfinalhalo.png')
+    elif blobfishPos[1] >= 375:
+        blobfish = pygame.image.load('blobfishfinalmud.png')
+    else:
+        blobfish = pygame.image.load('blobfishfinal.png')
+
+def checkOxygenNumber():
+    global oxygenNum
+    if oxygenlvl == 100:
+        oxygenNum = pygame.image.load('100.png')
+    if oxygenlvl == 80:
+        oxygenNum = pygame.image.load('80.png')
+    if oxygenlvl == 60:
+        oxygenNum = pygame.image.load('60.png')
+    if oxygenlvl == 40:
+        oxygenNum = pygame.image.load('40.png')
+    if oxygenlvl == 20:
+        oxygenNum = pygame.image.load('20.png')
+    if oxygenlvl == 0:
+        oxygenNum = pygame.image.load('0.png')
+
 
 #Bomb Configuration
 def randomBombGen():
@@ -131,7 +170,7 @@ def randomBombGen():
         if resultArray == 2:
             bombMidAlive = True
             print("boolean picked")
-        if resultArray == 3:
+        if resultArray == 3:    
             bombBotAlive = True
             print("boolean picked")
     if amountBomb == 3 or amountBomb == 4 or amountBomb == 5:
@@ -202,8 +241,16 @@ while mainGame == True:
     screen.blit(blobfish, blobfishPos)
 
     #Checking score based off how many waves go by
+    #If the x position of the blobfish is past the x position of the bomb, it will count how many bombs pass by and add that amount to points.
     if bombPosTop[0] < blobfishPos[0] or bombPosMid[0] < blobfishPos[0] or bombPosTop[0] < blobfishPos[0]:
         if pointsCounted == False:
+            if blobfishPos[1] <= 75:
+                oxygenlvl -= 20
+            if blobfishPos[1] >= 375:
+                oxygenlvl -= 20
+            if blobfishPos[1] < 375 and blobfishPos[1] > 75:
+                if oxygenlvl < 100:
+                    oxygenlvl += 20
             if amountBomb == 1 or amountBomb == 2:
                 points+=1
                 pointsCounted = True
@@ -244,6 +291,16 @@ while mainGame == True:
 
     #Collision with Bombs
     checkCollision()
+
+    #Changes blobfish
+    checkBlobfishLayer()
+
+    #Oxygen Meter Check
+    checkOxygenNumber()
+
+    #Oxygen Meter Blitting
+    screen.blit(oxygen, (14, 414))
+    screen.blit(oxygenNum, (94, 414))
 
     #Controling movement of blobfish
     for event in pygame.event.get():
