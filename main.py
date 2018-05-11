@@ -1,21 +1,3 @@
-#################################################################################################################
-#OTHER WEEKS USED TO UNDERSTAND FLAPPY BIRD CODE AND LEARN
-#PROGRESS FROM LAST WEEKS
-#Marin worked on the spirites and design on the images.
-#I worked on understanding the code and finding how to blit an image correctly with the sprite and background.
-#I also learned how to bli an image onto a certian coordinate. 
-#As well, I looked at the original flappy bird code and developed a feel for hwo the project should be made. 
-#My teammate eliminated the problems and other stuff to creat our similar game to to flappy bird.
-#The past few weeks have been creating collisions, creating the art work for different positions of the blobfish.
-#As well, a point system has been implemetned which prints out your total amount of points in the terminal.
-#A random bomb generator has been implemented and it also works with the blobfish.
-#################################################################################################################
-#CREDIT
-#Some code here comes from the youtubers "CodePylet" & "KidsCanCode"
-#Props to them.
-#As well, I have taken example from Mr. Cozort's code and game. Thank you.
-#################################################################################################################
-
 #Here are the imports to run the game: os and system to run the program. Random for different random generators.
     #I imported the class fish from the file sprite inside the folder. It was overall a display of my use of classes in different files.
     #I also imported time (sleep function), and other pygame functions for the game itself.
@@ -85,6 +67,9 @@ bombCenterBot = [bombPosBot[0] + bombBotDimen.center[0], bombPosBot[1]]
 blobfish = pygame.image.load('blobfishfinal.png')
 blobfishDimen = blobfish.get_rect()
 blobfishMask = pygame.mask.from_surface(blobfish)
+mud = False
+air = False
+water = False
 blobfishClass = Fish([0, 250], 150, 0)
     # ^^^ Here, the fish class from the sprites file is imported with a blobfish being the class. The different parameters are within the parentheses.
 #Menu and gameover images are loaded into pygame
@@ -92,18 +77,19 @@ menu = pygame.image.load('menu.png')
 gameover = pygame.image.load('gameover.png')
 
 #Here are the images for the numbers loaded into pygame.
-# numbers = {
-#     pygame.image.load('00.png')
-#     pygame.image.load('1.png')
-#     pygame.image.load('2.png')
-#     pygame.image.load('3.png')
-#     pygame.image.load('4.png')
-#     pygame.image.load('5.png')
-#     pygame.image.load('6.png')
-#     pygame.image.load('7.png')
-#     pygame.image.load('8.png')
-#     pygame.image.load('9.png')
-# }
+global numbers
+numbers = (
+    pygame.image.load('0.png'),
+    pygame.image.load('1.png'),
+    pygame.image.load('2.png'),
+    pygame.image.load('3.png'),
+    pygame.image.load('4.png'),
+    pygame.image.load('5.png'),
+    pygame.image.load('6.png'),
+    pygame.image.load('7.png'),
+    pygame.image.load('8.png'),
+    pygame.image.load('9.png')
+)
 
 #################################################################################################################
 #Here are the different functions used within the game.
@@ -118,7 +104,6 @@ def checkBombPos():
         global bombTopAlive
         bombTopAlive = False
         pointsCounted = False
-        print('checking pos')
     if bombPosMid[0] <= -90:
         bombPosMid[0] = 500
         global bombMidAlive
@@ -145,6 +130,7 @@ def checkDead():
         #After this, it will set the game start to false and the game restarts all over.
         screen.blit(background, (0,0))
         screen.blit(gameover, (0,0))
+        showScore(blobfishClass.points)
         pygame.display.update()
         sleep(2)
         gameStart = False
@@ -164,21 +150,21 @@ def oxygenBar(surface, x, y, startingOxygen, oxygen):
     pygame.draw.rect(surface, black, outlineRect, 2)
 
 #This function displays the a combination of the numbers to display how many points you have.
-# def showScore(points):
-#     #TAKEN FROM FLAPPY BIRD CODE
-#     scoreDigits = [int(x) for x in list(str(points))]
-#     totalWidth = 0 
-#     #The total width of all numbers to be printed
-#     for digit in scoreDigits:
-#         totalWidth += numbers[digit].get_width()
-#     #Takes the width of all the images and finds the total width and divides it by 2 to find the center. It blits the center accordingly.
-#     Xoffset = (width - totalWidth) / 2
-#     for digit in scoreDigits:
-#         screen.blit(numbers[digit], (Xoffset, 20))
+def showScore(points):
+    #TAKEN FROM FLAPPY BIRD CODE
+    scoreDigits = [int(x) for x in list(str(points))]
+    totalWidth = 0 
+    #The total width of all numbers to be printed
+    for digit in scoreDigits:
+        totalWidth += numbers[digit].get_width()
+    #Takes the width of all the images and finds the total width and divides it by 2 to find the center. It blits the center accordingly.
+    Xoffset = (width - totalWidth) / 2
+    for digit in scoreDigits:
+        screen.blit(numbers[digit], (Xoffset, 10))
+        Xoffset += numbers[digit].get_width()
 
 #This function randomly generates a bomb accordingly.
 def randomBombGen():
-    print("random bomb gen is working...")
     global amountBomb
     if blobfishClass.points > 75:
         amountBomb = randint(4,6)
@@ -253,7 +239,9 @@ while mainGame == True:
         #CODE TAKEN FROM YOUTUBER "Code Pylet"
     
     #Blitting the blobfish
-    screen.blit(blobfish, blobfishClass.position)
+    blobfishState = blobfishClass.checkFishLayer(blobfishClass.position)
+    screen.blit(blobfishState, blobfishClass.position)
+    
     #Configurating bomb movement in the loop. It includes blitting the image and checking if the bomb is alive. If it is alive through the random bomb gen, it should move across the screen.
     screen.blit(bombTop, bombPosTop)
     screen.blit(bombMid, bombPosMid)
@@ -281,18 +269,8 @@ while mainGame == True:
                     blobfishClass.oxygen += 15
                     #This part checks to see if the blobfish is in the sand or air. If it is, it takes away oxygen. if it is in water, it adds oxygen unless it is already at full capacity.
                     #It adds or removes oxygen after every bomb wave passes the position of the blobfish.
-            if amountBomb == 1 or amountBomb == 2:
-                blobfishClass.points += 1
-                pointsCounted = True
-            if amountBomb == 3 or amountBomb == 4 or amountBomb == 5:
-                blobfishClass.points += 2
-                pointsCounted = True
-            if amountBomb == 6:
-                blobfishClass.points+=3
-                pointsCounted = True
-            print(blobfishClass.points)
-    if blobfishClass.points >= 100:
-        print("YOU WIN")
+            blobfishClass.points += 1
+            pointsCounted = True
 
     #Collision Config blobfish and pygame window
     #Setting Collision Boundaries for sprite.
@@ -314,10 +292,9 @@ while mainGame == True:
     elif blobfishClass.position[1] != 0:
         movement[0] = True
 
-    #Collision with Bombs, checking the position of the blobfish to change its loaded image, showing the score by displaying the points, resetting the game if there is a collision, blitting the menu and running the oxygen meter.
+    #Collision with Bombs, showing the score by displaying the points, resetting the game if there is a collision, blitting the menu and running the oxygen meter.
     checkDead()
-    blobfishClass.checkFishLayer(blobfishClass.position)
-    # showScore(blobfishClass.points)
+    showScore(blobfishClass.points)
     reset()
     if gameStart == False:
         screen.blit(menu, (0,0))
