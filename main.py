@@ -13,6 +13,7 @@ from pygame.locals import *
 
 #Here is a list of the different variables used within the game. As well, the game intialized here.
 pygame.init()
+pygame.mixer.init()
 pygame.display.set_caption("Blobbyfish")
     #Caption for game
 width = 500
@@ -90,6 +91,10 @@ numbers = (
     pygame.image.load('8.png'),
     pygame.image.load('9.png')
 )
+#Music from Nintendo
+pygame.mixer.music.load("mariounderwatertheme.mp3")
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play()
 
 #################################################################################################################
 #Here are the different functions used within the game.
@@ -301,7 +306,7 @@ while mainGame == True:
         screen.blit(menu, (0,0))
     oxygenBar(screen, 10, 410, 150, blobfishClass.oxygen)
 
-    #Controling movement of blobfish
+    #Controling movement of blobfish (same from bunny game)
     for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 gameStart = True
