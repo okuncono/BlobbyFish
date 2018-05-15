@@ -94,7 +94,7 @@ numbers = (
 #Music from Nintendo
 pygame.mixer.music.load("mariounderwatertheme.mp3")
 pygame.mixer.music.set_volume(0.5)
-pygame.mixer.music.play()
+pygame.mixer.music.play(15)
 
 #################################################################################################################
 #Here are the different functions used within the game.
