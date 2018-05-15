@@ -294,7 +294,8 @@ while mainGame == True:
 
     #Collision with Bombs, showing the score by displaying the points, resetting the game if there is a collision, blitting the menu and running the oxygen meter.
     checkDead()
-    showScore(blobfishClass.points)
+    if gameStart == True:
+        showScore(blobfishClass.points)
     reset()
     if gameStart == False:
         screen.blit(menu, (0,0))
